@@ -1,3 +1,4 @@
+-- Genutztes DBMS: MySQL 5.7.24
 -- Aufgabe 1
 CREATE TABLE `Ferienhausvermietung1`.`PreiseXX`
 LIKE `Ferienhausvermietung1`.`Preise`;
@@ -113,7 +114,7 @@ SELECT MIN(`Betrag`) AS `Minimum`,MAX(`Betrag`) AS `Maximum`
 FROM `Ferienhausvermietung1`.`Vermietung`;
 
 -- Aufgabe 24
-SELECT AVG(`Fläche`) as `Anzahl`
+SELECT ROUND(AVG(`Fläche`)/`AnzZimmer`,2) as `Durchschnitt (Fläche/Zimmer)`
 FROM `Ferienhausvermietung1`.`Haus`
 GROUP BY `AnzZimmer`;
 
@@ -203,10 +204,7 @@ FROM `Mieter` AS `M`,`Vermietung` AS `V`,`Preise` AS `P`,`Haus` AS `H`
 WHERE `M`.`MieterNr` = `V`.`MieterNr`
 AND `V`.`FHaus` = `H`.`FHaus`
 AND `H`.`Preisschl` = `P`.`Preisschl`
-AND `P`.`Wochenpreis` > (SELECT AVG(`Wochenpreis`) FROM `Preise`)
--- Interessenten haben weder angezahlt noch bezahlt
-AND `V`.`Anzahlung` = 0
-AND `V`.`bezahlt` = 0;
+AND `P`.`Wochenpreis` > (SELECT AVG(`Wochenpreis`) FROM `Preise`);
 
 -- Aufgabe 37
 USE `Ferienhausvermietung1`;
@@ -219,3 +217,59 @@ WHERE `H`.`FHaus` IN
 );
 
 -- Aufgabe 38
+USE `Ferienhausvermietung1`;
+SELECT `M`.`Name`, `V`.`FHaus`, `V`.`Mietbeginn`, `V`.`Mietende`
+FROM `Vermietung` AS `V`
+INNER JOIN `Mieter` AS `M` ON `V`.`MieterNr` = `M`.`MieterNr`
+WHERE `V`.`FHaus` IN
+	(SELECT `V_s`.`FHaus` FROM `Vermietung` AS `V_s`
+    GROUP BY `V_s`.`FHaus`, `V_s`.`MieterNr`
+    HAVING COUNT(*) > 1)
+AND `V`.`MieterNr` IN
+	(SELECT `V_s`.`MieterNr` FROM `Vermietung` AS `V_s`
+    GROUP BY `V_s`.`FHaus`, `V_s`.`MieterNr`
+    HAVING COUNT(*) > 1);
+
+-- Aufgabe 39
+-- Mega unsicher
+USE `Ferienhausvermietung1`;
+SELECT `M`.*, `V1`.`Betrag` AS `Betrag1`, `V2`.`Betrag` AS `Betrag2`
+FROM `Vermietung` AS `V1`
+INNER JOIN `Vermietung` AS `V2`
+ON `V1`.`Betrag` = `V2`.`Betrag`
+LEFT JOIN `Mieter` AS `M`
+ON `V1`.`MieterNr` = `M`.`MieterNr`;
+
+-- Aufgabe 40
+INSERT INTO `Ferienhausvermietung1`.`Haus`
+VALUES ('Neues Haus', 4, 55, 2);
+
+-- Aufgabe 41
+INSERT INTO `Ferienhausvermietung1`.`Mieter`
+VALUES (7, 'Dombrowski', '12345', 'Berlin', 'Straße 1', '987654321');
+
+-- Aufgabe 42
+USE `Ferienhausvermietung1`;
+SELECT *
+FROM `Mieter` AS `M`
+LEFT JOIN `Vermietung` AS `V`
+ON `M`.`MieterNr` = `V`.`MieterNr`;
+
+-- Aufgabe 43
+USE `Ferienhausvermietung1`;
+SELECT `H`.* FROM `Haus` AS `H`
+LEFT JOIN `Vermietung` AS `V` ON `V`.`FHaus` = `H`.`FHaus`
+WHERE `V`.`VNr` IS NULL;
+
+-- Aufgabe 44
+USE `Ferienhausvermietung1`;
+SELECT *
+FROM `Haus`
+WHERE FHaus IN (
+	SELECT `V`.`FHaus`
+	FROM `Vermietung` AS `V`
+	WHERE `V`.`Mietbeginn` > '2007-09-01'
+	AND `V`.`Mietende` < '2007-09-30'
+);
+
+-- Aufgabe 45
