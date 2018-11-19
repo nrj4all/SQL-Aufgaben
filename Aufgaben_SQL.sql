@@ -239,11 +239,11 @@ AND `V_A`.`MieterNr` <> `V_B`.`MieterNr`;
 
 -- Aufgabe 40
 INSERT INTO `Ferienhausvermietung1`.`Haus`
-VALUES ('Neues Haus', 4, 55, 2);
+VALUES ('Fink', 4, 55, 2);
 
 -- Aufgabe 41
 INSERT INTO `Ferienhausvermietung1`.`Mieter`
-VALUES (7, 'Dombrowski', '12345', 'Berlin', 'Straße 1', '987654321');
+VALUES (7, 'Schulze', '12345', 'Berlin', 'Straße 1', '987654321');
 
 -- Aufgabe 42
 USE `Ferienhausvermietung1`;
@@ -308,4 +308,5 @@ WHERE `NBV`.`Mietbeginn` < '2008-01-01';
 -- Aufgabe 49
 UPDATE `Ferienhausvermietung1`.`nicht_bezahlte_Vermietungen` AS `NBV`
 SET `NBV`.`bezahlt` = 1
-	WHERE `NBV`.`VNr` = 17;
+	WHERE `NBV`.`VNr` = 17;er
+	
